@@ -53,6 +53,7 @@ gh pr review $ARGUMENTS --comment --body "<レビュー内容>"
 #### 1. 指摘タイトル（重要度）
 
 重要度は以下のいずれか:
+
 - **必須**: マージ前に修正が必要
 - **推奨**: 修正が望ましいがブロッキングではない
 - **軽微**: 改善提案、好みの範囲
@@ -86,41 +87,54 @@ ISSUE_URL=$(gh issue create \
   --title "<指摘の種別プレフィックス>: <指摘タイトル>" \
   --label "<ラベル>" \
   --body-file /tmp/issue-body.md)
-ISSUE_NUMBER=$(echo $ISSUE_URL | grep -oP '\d+$')
+ISSUE_NUMBER=$(echo "$ISSUE_URL" | awk -F'/' '{print $NF}')
 rm /tmp/issue-body.md
 ```
 
+> **注意 (コマンド選択)**:
+> - `awk -F'/' '{print $NF}'` は POSIX 準拠で macOS・Linux・Windows 全環境で動作する。
+> - `grep -oP` は GNU grep 専用のため **macOS（BSD grep）および Windows では動作しない**。
+>
 > **注意**: `--body` にコードブロック（バッククォート）を含む本文を直接渡すとシェルに解釈されてエラーになるため、必ず `--body-file` を使うこと。
 
 **タイトルプレフィックスとラベルの対応:**
 
-| プレフィックス | 用途 | `improvement` ラベル |
-|--------------|------|-------------------|
-| `fix:` | バグ・不正な動作 | 付与しない |
-| `refactor:` | コード品質改善 | **付与する** |
-| `test:` | テスト品質改善 | **付与する** |
-| `perf:` | パフォーマンス | 軽微な最適化は**付与する**、重大な性能問題は付与しない |
-| `docs:` | ドキュメント改善 | **付与する** |
-| `feat:` | 新機能・機能追加 | 判断による（UX改善等は**付与する**） |
+| プレフィックス | 用途             | `improvement` ラベル                                   |
+| -------------- | ---------------- | ------------------------------------------------------ |
+| `fix:`         | バグ・不正な動作 | 付与しない                                             |
+| `refactor:`    | コード品質改善   | **付与する**                                           |
+| `test:`        | テスト品質改善   | **付与する**                                           |
+| `perf:`        | パフォーマンス   | 軽微な最適化は**付与する**、重大な性能問題は付与しない |
+| `docs:`        | ドキュメント改善 | **付与する**                                           |
+| `feat:`        | 新機能・機能追加 | 判断による（UX改善等は**付与する**）                   |
 
 > **判断基準**: 「動作の正確性・信頼性・セキュリティに影響しない」改善であれば `improvement` を付与する。
 > バグ修正・セキュリティ対策・入力検証の追加など、動作に直結するものは付与しない。
 
 **本文に含めるべき内容:**
-- **背景**: どのPRレビューで検出したか（例: `PR #200 のレビューで検出`）
+
+- **背景**: どのPRレビューで発見したか（例: `PR #200 のレビューで発見`）
 - **現状**: 問題のあるコードスニペット
 - **対応方針**: 修正の方向性
 - **関連**: PR番号と課題管理Issue（課題を一覧として管理するIssue）
 
 2. 作成したIssueを課題を一覧として管理するIssueのSub-Issueとして紐付ける:
 
+Sub-Issueの登録には Issue の**データベースID**（大きな数値）が必要。
+
+> **注意 (コマンド選択)**:
+> - `gh api -F key=value` は値を文字列として送るため、整数型が要求されるフィールドに使うと 422 エラーになる（全プラットフォーム共通）。
+> - `printf '{"key": %d}' VALUE | gh api --input -` で整数 JSON を送ること。
+
 例）
 
 ```bash
-gh api \
+REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner)
+ISSUE_DB_ID=$(gh api repos/$REPO/issues/$ISSUE_NUMBER --jq '.id')
+printf '{"sub_issue_id": %d}' "$ISSUE_DB_ID" | gh api \
   --method POST \
-  repos/$(gh repo view --json nameWithOwner -q .nameWithOwner)/issues/80/sub_issues \
-  -F sub_issue_id=$ISSUE_NUMBER
+  repos/$REPO/issues/80/sub_issues \
+  --input -
 ```
 
 3. 作成したIssueを課題管理Issueにコメントで追記する:
