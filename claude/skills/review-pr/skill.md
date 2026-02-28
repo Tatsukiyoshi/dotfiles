@@ -33,10 +33,14 @@ gh pr diff $ARGUMENTS
 
 ## 3. レビューコメントの登録
 
-分析結果を以下のフォーマットで `gh pr review` を使ってPRに登録する:
+分析結果を以下のフォーマットで `gh pr review` を使ってPRに登録する。
+
+> **注意**: `--body` に Markdown（バッククォート・コードブロック・特殊文字）を含む本文を直接渡すとシェルに解釈されてエラーになる。必ず Write ツールでファイルに書き出してから `--body-file` で渡すこと。
 
 ```bash
-gh pr review $ARGUMENTS --comment --body "<レビュー内容>"
+# Write ツールで /tmp/review-body.md に本文を書き出してから実行する
+gh pr review $ARGUMENTS --comment --body-file /tmp/review-body.md
+rm /tmp/review-body.md
 ```
 
 ### レビューコメントのフォーマット
@@ -75,13 +79,13 @@ gh pr review $ARGUMENTS --comment --body "<レビュー内容>"
 
 ### Issue作成手順
 
-1. 指摘事項ごとに Issue 本文をファイルに書き出し、`gh issue create --body-file` でIssueを作成して、発行されたIssue番号を取得する:
+1. 指摘事項ごとに Issue 本文を **Write ツール** で `/tmp/issue-body.md` に書き出し、`gh issue create --body-file` でIssueを作成して、発行されたIssue番号を取得する:
+
+> **注意**: Issue 本文には Markdown（バッククォート・コードブロック等）が含まれるため、`--body` への直接渡しや `cat << EOF` ヒアドキュメントは使わず、必ず **Write ツールでファイルに書き出してから** `--body-file` で渡すこと。
+
+Write ツールで `/tmp/issue-body.md` を作成した後:
 
 ```bash
-cat > /tmp/issue-body.md << 'EOF'
-<背景・現状・対応方針・関連PRへの言及を含む本文>
-EOF
-
 ISSUE_URL=$(gh issue create \
   --title "<指摘の種別プレフィックス>: <指摘タイトル>" \
   --label "<ラベル>" \
@@ -93,8 +97,6 @@ rm /tmp/issue-body.md
 > **注意 (コマンド選択)**:
 > - `awk -F'/' '{print $NF}'` は POSIX 準拠で macOS・Linux・Windows 全環境で動作する。
 > - `grep -oP` は GNU grep 専用のため **macOS（BSD grep）および Windows では動作しない**。
->
-> **注意**: `--body` にコードブロック（バッククォート）を含む本文を直接渡すとシェルに解釈されてエラーになるため、必ず `--body-file` を使うこと。
 
 **タイトルプレフィックスとラベルの対応:**
 
@@ -137,10 +139,14 @@ printf '{"sub_issue_id": %d}' "$ISSUE_DB_ID" | gh api \
 
 3. 作成したIssueを課題管理Issueにコメントで追記する:
 
+> **注意**: `--body` に Markdown を含む場合はシェルに解釈されエラーになる。必ず Write ツールでファイルに書き出してから `--body-file` で渡すこと。
+
 例）
 
 ```bash
-gh issue comment 80 --body "<追加Issueの一覧表>"
+# Write ツールで /tmp/issue-comment.md に本文を書き出してから実行する
+gh issue comment 80 --body-file /tmp/issue-comment.md
+rm /tmp/issue-comment.md
 ```
 
 4. **課題一覧の「現在の注力領域」セクションへの追加（必須）**
@@ -149,7 +155,7 @@ gh issue comment 80 --body "<追加Issueの一覧表>"
 
    - ステータスは依存 Issue の状態に応じて `🔄 着手可能` または `⏳ 待機中` を設定する
    - 依存関係が明確でない場合は `⏳ 待機中` とし、依存欄に暫定的な情報を記載する
-   - `gh issue edit 2 --body "..."` で課題一覧を更新する
+   - Write ツールで `/tmp/issue2-body.md` に本文を書き出し、`gh issue edit 2 --body-file /tmp/issue2-body.md && rm /tmp/issue2-body.md` で課題一覧を更新する
 
    > **注意**: 注力領域に追加せず「信頼性・正確性にかかわる項目」のみへの追加はしないこと。注力領域の作業に関連する Issue は両方のセクションに登録する。
 
