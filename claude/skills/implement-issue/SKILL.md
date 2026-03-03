@@ -89,5 +89,9 @@ bun run type-check # TypeScript型チェック
 - `gh pr create` でPRを作成する
 - タイトル: 簡潔に変更内容を表す（70文字以内）
 - 本文: Summary（箇条書き）、Test plan（テスト手順チェックリスト）を含める
+  - Test plan には以下を**必ず**含める:
+    - `bun run test` が全てパスすることを確認
+    - `bun run lint` が 0 warnings で通過することを確認
+    - `bun run type-check` が通過することを確認
 - `Closes #$ARGUMENTS` を本文に含めてIssueを自動クローズする
 - PR URLを最後に表示する
