@@ -1,7 +1,7 @@
 ---
 name: review-pr
 description: GitHub PRをレビューし、日本語でレビューコメントをPRに登録する。PR番号を引数に取る。
-user-invokable: true
+user-invocable: true
 argument-hint: "[pr-number]"
 ---
 
@@ -146,9 +146,12 @@ rm /tmp/issue-body.md
 > - `awk -F'/' '{print $NF}'` は POSIX 準拠で macOS・Linux・Windows 全環境で動作する。
 > - `grep -oP` は GNU grep 専用のため **macOS（BSD grep）および Windows では動作しない**。
 
-> **タイトルの書き方**: コミットプレフィックス（`docs:` 等）をそのままタイトルに使わず、**「何を・どうする」がユーザー目線で伝わる**タイトルにすること。
-> - NG: `docs: batch-design.md にスクリプト実行手順を追加する`
-> - OK: `曲対比インデックスの生成スクリプト実行手順をバッチ設計書に反映する`
+> **タイトルの書き方**: コミットプレフィックス（`docs:` 等）をそのままタイトルに流用しない。課題の種類に応じて以下を使い分けること。
+> - 機能追加・ドキュメント整備・運用手順など → **ユーザー目線**（何を達成・反映するか）
+>   - NG: `docs: batch-design.md にスクリプト実行手順を追加する`
+>   - OK: `曲対比インデックスの生成スクリプト実行手順をバッチ設計書に反映する`
+> - リファクタ・テスト追加・内部改善など → **実装を明示**（何をどう変えるか）
+>   - OK: `refactor: build-comparison-index.ts の型定義を types/comparison.ts と共有する`
 
 **タイトルプレフィックスとラベルの対応:**
 
