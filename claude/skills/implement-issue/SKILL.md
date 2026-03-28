@@ -130,10 +130,23 @@ bun run type-check # TypeScript型チェック
 
 - `gh pr create` でPRを作成する
 - タイトル: 簡潔に変更内容を表す（70文字以内）
-- 本文: Summary（箇条書き）、Test plan（テスト手順チェックリスト）を含める
-  - Test plan には以下を**必ず**含める:
-    - `bun run test` が全てパスすることを確認
-    - `bun run lint` が 0 warnings で通過することを確認
-    - `bun run type-check` が通過することを確認
-- `Closes #$ARGUMENTS` を本文に含めてIssueを自動クローズする
+- 本文は以下のフォーマットをそのまま使うこと:
+
+```
+## Summary
+- （変更点を箇条書き）
+
+## Test plan
+- [ ] bun run test が全てパスすることを確認
+- [ ] bun run lint が 0 warnings で通過することを確認
+- [ ] bun run type-check が通過することを確認
+- [ ] （機能ごとの確認項目）
+
+Closes #$ARGUMENTS
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+```
+
+- PR作成後、`gh pr view $PR_NUMBER --json body --jq '.body'` で本文を取得し、`Closes #$ARGUMENTS` の記載があることを**必ず確認する**
+  - 記載がなければ `gh pr edit $PR_NUMBER --body-file` で追記すること
 - PR URLを最後に表示する
