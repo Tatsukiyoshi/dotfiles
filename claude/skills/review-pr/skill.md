@@ -101,6 +101,27 @@ rm /tmp/review-body.md
 
 該当ブランチをチェックアウトして修正・コミットし、`bun run test` / `bun run lint` / `bun run type-check` を実行して問題がないことを確認する。
 
+その後、以下を必ず実施する:
+
+1. **ブランチをリモートにプッシュする**:
+
+```bash
+git push origin <ブランチ名>
+```
+
+2. **PR に修正内容をコメントする**:
+
+```bash
+# Write ツールで /tmp/pr-fix-comment.md に本文を書き出してから実行する
+gh pr comment $ARGUMENTS --body-file /tmp/pr-fix-comment.md
+rm /tmp/pr-fix-comment.md
+```
+
+コメントには以下を含める:
+- 対応したレビュー指摘の番号・タイトル
+- 変更内容の概要（差分があれば before/after を記載）
+- コミットハッシュ
+
 ### Issue化して登録する場合
 
 #### Issue作成手順
