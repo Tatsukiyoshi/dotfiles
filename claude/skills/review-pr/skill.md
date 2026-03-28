@@ -146,6 +146,10 @@ rm /tmp/issue-body.md
 > - `awk -F'/' '{print $NF}'` は POSIX 準拠で macOS・Linux・Windows 全環境で動作する。
 > - `grep -oP` は GNU grep 専用のため **macOS（BSD grep）および Windows では動作しない**。
 
+> **タイトルの書き方**: コミットプレフィックス（`docs:` 等）をそのままタイトルに使わず、**「何を・どうする」がユーザー目線で伝わる**タイトルにすること。
+> - NG: `docs: batch-design.md にスクリプト実行手順を追加する`
+> - OK: `曲対比インデックスの生成スクリプト実行手順をバッチ設計書に反映する`
+
 **タイトルプレフィックスとラベルの対応:**
 
 | プレフィックス | 用途 | `improvement` ラベル |
