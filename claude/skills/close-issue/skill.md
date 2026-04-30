@@ -40,7 +40,31 @@ gh issue close $ARGUMENTS --reason <completed|not planned>
 rm /tmp/close-comment.md
 ```
 
-## 4. 課題一覧の更新
+## 4. マイルストーンの確認・クローズ
+
+Issue がマイルストーンに属している場合、そのマイルストーンの全 Issue がクローズ済みかを確認する。
+
+```bash
+# Issue のマイルストーン番号を取得
+gh issue view $ARGUMENTS --json milestone --jq '.milestone.number // empty'
+```
+
+マイルストーン番号が取得できた場合:
+
+```bash
+# マイルストーン内の Open Issue 数を確認
+gh api repos/:owner/:repo/milestones/<milestone_number> --jq '.open_issues'
+```
+
+`open_issues` が **0** であれば、マイルストーンをクローズする:
+
+```bash
+gh api --method PATCH repos/:owner/:repo/milestones/<milestone_number> -f state=closed --jq '.title, .state'
+```
+
+クローズした場合はユーザーに報告する（例: "マイルストーン『v3.6.0』をクローズしました"）。
+
+## 5. 課題一覧の更新
 
 課題一覧（Issue #2）の該当行の状態を `OPEN` → `CLOSED` に更新する。
 
@@ -59,6 +83,6 @@ sed 's/| #$ARGUMENTS | .* | OPEN |/... | CLOSED |/' /tmp/issue2-current.md > /tm
 2. 対象行を特定して Write ツールで `/tmp/issue2-updated.md` に正確な本文を書き出す
 3. `gh issue edit 2 --body-file /tmp/issue2-updated.md && rm /tmp/issue2-current.md /tmp/issue2-updated.md` で反映する
 
-## 5. 結果の表示
+## 6. 結果の表示
 
 クローズしたIssue番号・タイトル・理由を簡潔にユーザーに報告する。
