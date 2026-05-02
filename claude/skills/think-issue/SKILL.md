@@ -126,11 +126,29 @@ gh issue comment $ARGUMENTS --body-file /tmp/think-issue-comment.md
 rm /tmp/think-issue-comment.md
 ```
 
-## 6. 検討結果の報告
+## 6. 検討結果の報告と方針の承認
 
-ユーザーに検討結果をまとめて報告する:
+ユーザーに検討結果をまとめて報告し、実装方針の承認を得る:
 
 - 分析で気づいた点（要件の明確性・依存関係・リスク）
 - 確認事項とその結果
 - Issue分割を行った場合: 作成したSub-Issue番号と各タイトルの一覧
+- **実装方針**: 確定した設計方針をまとめて提示し、承認を求める
 - **推奨アクション**: 次に何をすべきか（例: `/implement-issue $ARGUMENTS` で実装着手、先行Issueの完了待ち、など）
+
+ユーザーが承認した場合のみ、ステップ7に進む。
+
+## 7. 実装方針のIssueへの反映
+
+承認済みの実装方針を、Issue（分割した場合は親Issue）にコメントとして追記する。
+
+> **注意**: `--body` にMarkdownを含む場合は `printf '%s' '...' > /tmp/think-issue-comment.md` でファイルを作成し `--body-file` で渡すこと。
+
+```bash
+printf '%s' '## 実装方針
+
+{方針の内容}
+' > /tmp/think-issue-comment.md
+gh issue comment $ARGUMENTS --body-file /tmp/think-issue-comment.md
+rm /tmp/think-issue-comment.md
+```
