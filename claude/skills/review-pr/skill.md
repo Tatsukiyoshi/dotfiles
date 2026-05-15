@@ -42,12 +42,12 @@ gh pr view <先行PR番号> --comments
 
 分析結果を以下のフォーマットで `gh pr review` を使ってPRに登録する。
 
-> **注意**: `--body` に Markdown（バッククォート・コードブロック・特殊文字）を含む本文を直接渡すとシェルに解釈されてエラーになる。必ず Write ツールでファイルに書き出してから `--body-file` で渡すこと。
+> **注意**: `--body` に Markdown（バッククォート・コードブロック・特殊文字）を含む本文を直接渡すとシェルに解釈されてエラーになる。必ず Write ツールでプロジェクトの `.claude\tmp\gh-body.md` に書き出してから `--body-file` で渡すこと。PowerShell ツールで実行すること（Write ツールの出力パスと bash の `/tmp/` は別パスのため bash では読めない）。
 
-```bash
-# Write ツールで /tmp/review-body.md に本文を書き出してから実行する
-gh pr review $ARGUMENTS --comment --body-file /tmp/review-body.md
-rm /tmp/review-body.md
+```powershell
+# Write ツールでプロジェクトの .claude\tmp\gh-body.md に本文を書き出してから実行する
+gh pr review $ARGUMENTS --comment --body-file ".claude\tmp\gh-body.md"
+Remove-Item ".claude\tmp\gh-body.md"
 ```
 
 ### レビューコメントのフォーマット
@@ -112,10 +112,10 @@ git push origin <ブランチ名>
 
 2. **PR に修正内容をコメントする**:
 
-```bash
-# Write ツールで /tmp/pr-fix-comment.md に本文を書き出してから実行する
-gh pr comment $ARGUMENTS --body-file /tmp/pr-fix-comment.md
-rm /tmp/pr-fix-comment.md
+```powershell
+# Write ツールで .claude\tmp\gh-body.md に本文を書き出してから実行する
+gh pr comment $ARGUMENTS --body-file ".claude\tmp\gh-body.md"
+Remove-Item ".claude\tmp\gh-body.md"
 ```
 
 コメントには以下を含める:
@@ -127,19 +127,19 @@ rm /tmp/pr-fix-comment.md
 
 #### Issue作成手順
 
-1. 指摘事項ごとに Issue 本文を **Write ツール** で `/tmp/issue-body.md` に書き出し、`gh issue create --body-file` でIssueを作成して、発行されたIssue番号を取得する:
+1. 指摘事項ごとに Issue 本文を **Write ツール** で `.claude\tmp\gh-body.md` に書き出し、`gh issue create --body-file` でIssueを作成して、発行されたIssue番号を取得する:
 
 > **注意**: Issue 本文には Markdown（バッククォート・コードブロック等）が含まれるため、`--body` への直接渡しや `cat << EOF` ヒアドキュメントは使わず、必ず **Write ツールでファイルに書き出してから** `--body-file` で渡すこと。
 
-Write ツールで `/tmp/issue-body.md` を作成した後:
+Write ツールで `.claude\tmp\gh-body.md` を作成した後:
 
-```bash
-ISSUE_URL=$(gh issue create \
-  --title "<指摘の種別プレフィックス>: <指摘タイトル>" \
-  --label "<ラベル>" \
-  --body-file /tmp/issue-body.md)
-ISSUE_NUMBER=$(echo "$ISSUE_URL" | awk -F'/' '{print $NF}')
-rm /tmp/issue-body.md
+```powershell
+$issueUrl = gh issue create `
+  --title "<指摘の種別プレフィックス>: <指摘タイトル>" `
+  --label "<ラベル>" `
+  --body-file ".claude\tmp\gh-body.md"
+$ISSUE_NUMBER = $issueUrl -split '/' | Select-Object -Last 1
+Remove-Item ".claude\tmp\gh-body.md"
 ```
 
 > **注意 (コマンド選択)**:
@@ -198,10 +198,10 @@ printf '{"sub_issue_id": %d}' "$ISSUE_DB_ID" | gh api \
 
 例）
 
-```bash
-# Write ツールで /tmp/issue-comment.md に本文を書き出してから実行する
-gh issue comment 80 --body-file /tmp/issue-comment.md
-rm /tmp/issue-comment.md
+```powershell
+# Write ツールで .claude\tmp\gh-body.md に本文を書き出してから実行する
+gh issue comment 80 --body-file ".claude\tmp\gh-body.md"
+Remove-Item ".claude\tmp\gh-body.md"
 ```
 
 4. **課題一覧の「現在の注力領域」セクションへの追加（必須）**

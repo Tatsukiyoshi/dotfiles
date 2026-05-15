@@ -119,11 +119,12 @@ gh api graphql -f query='mutation {
 
 分割の経緯と作成したSub-Issue番号を元Issueにコメントとして記録する。
 
-> **注意**: `--body` にMarkdownを含む場合はWriteツールでファイルに書き出し `--body-file` で渡すこと。
+> **注意**: `--body` にMarkdownを含む場合はWriteツールでプロジェクトの `.claude\tmp\gh-body.md` に書き出し `--body-file` で渡すこと。PowerShellツールで実行すること（Writeツールの出力パスとbashの `/tmp/` は別パスのためbashでは読めない）。
 
-```bash
-gh issue comment $ARGUMENTS --body-file /tmp/think-issue-comment.md
-rm /tmp/think-issue-comment.md
+```powershell
+# Write ツールで .claude\tmp\gh-body.md に本文を書き出してから実行する
+gh issue comment $ARGUMENTS --body-file ".claude\tmp\gh-body.md"
+Remove-Item ".claude\tmp\gh-body.md"
 ```
 
 ## 6. 検討結果の報告と方針の承認
@@ -142,13 +143,10 @@ rm /tmp/think-issue-comment.md
 
 承認済みの実装方針を、Issue（分割した場合は親Issue）にコメントとして追記する。
 
-> **注意**: `--body` にMarkdownを含む場合は `printf '%s' '...' > /tmp/think-issue-comment.md` でファイルを作成し `--body-file` で渡すこと。
+> **注意**: `--body` にMarkdownを含む場合はWriteツールでプロジェクトの `.claude\tmp\gh-body.md` に書き出してから `--body-file` で渡すこと。PowerShellツールで実行すること。
 
-```bash
-printf '%s' '## 実装方針
-
-{方針の内容}
-' > /tmp/think-issue-comment.md
-gh issue comment $ARGUMENTS --body-file /tmp/think-issue-comment.md
-rm /tmp/think-issue-comment.md
+```powershell
+# Write ツールで .claude\tmp\gh-body.md に本文を書き出してから実行する
+gh issue comment $ARGUMENTS --body-file ".claude\tmp\gh-body.md"
+Remove-Item ".claude\tmp\gh-body.md"
 ```
