@@ -34,7 +34,14 @@ GitHub Issue **#$ARGUMENTS** を実装する。以下の手順に従って作業
 
 ## 3. ブランチ作成
 
-- 原則として mainブランチから新しいブランチを作成する
+必ず以下の順番で実行すること（例外なし）:
+
+```bash
+git checkout main
+git pull
+git checkout -b <branch-name>
+```
+
 - ブランチ名:
   - 通常: `feature/issue-$ARGUMENTS-{概要の英語要約}`
   - バグ修正: `fix/issue-$ARGUMENTS-{概要の英語要約}`
