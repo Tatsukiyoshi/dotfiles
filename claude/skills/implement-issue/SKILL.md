@@ -152,16 +152,19 @@ bun run type-check # TypeScript型チェック
 - （変更点を箇条書き）
 
 ## Test plan
-- [ ] bun run test が全てパスすることを確認
-- [ ] bun run lint が 0 warnings で通過することを確認
-- [ ] bun run type-check が通過することを確認
+- [x] bun run test が全てパスすることを確認
+- [x] bun run lint が 0 warnings で通過することを確認
+- [x] bun run type-check が通過することを確認
 - [ ] （機能ごとの確認項目）
 
-Closes #$ARGUMENTS
+Closes #NNN
+Closes #NNN
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
-- PR作成後、`gh pr view $PR_NUMBER --json body --jq '.body'` で本文を取得し、`Closes #$ARGUMENTS` の記載があることを**必ず確認する**
+- ステップ7で実施済みの bun run test / lint / type-check は `[x]` でチェック済みにすること
+- `Closes` は Issue ごとに1行ずつ記載すること（複数Issueをまとめて1行に書かない）
+- PR作成後、`gh pr view $PR_NUMBER --json body --jq '.body'` で本文を取得し、各 `Closes #NNN` の記載があることを**必ず確認する**
   - 記載がなければ `gh pr edit $PR_NUMBER --body-file` で追記すること
 - PR URLを最後に表示する
