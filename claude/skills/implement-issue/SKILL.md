@@ -144,6 +144,9 @@ bun run type-check # TypeScript型チェック
      - **変更概要はユーザー視点で記述すること**: コード内部の関数名・クラス名・ファイル名は使わず、「何ができるようになったか」「何が改善されたか」を平易な言葉で表現する
        - NG: `` `syncPlaylistTrackIds` のスキップ条件を修正 ``
        - OK: `プレイリスト楽曲への trackId 自動補完がスキップされるバグを修正`
+     - **体言止めで記述すること**: 文末を名詞・名詞句で締める（「〜した」は使わない）
+       - NG: `プレイリスト楽曲への trackId 自動補完がスキップされるバグを修正した`
+       - OK: `プレイリスト楽曲への trackId 自動補完がスキップされるバグの修正`
 - バージョンを上げない場合: このステップをスキップする
 
 ## 11. コミット＆プッシュ
@@ -178,4 +181,5 @@ Closes #NNN
 - `Closes` は Issue ごとに1行ずつ記載すること（複数Issueをまとめて1行に書かない）
 - PR作成後、`gh pr view $PR_NUMBER --json body --jq '.body'` で本文を取得し、各 `Closes #NNN` の記載があることを**必ず確認する**
   - 記載がなければ `gh pr edit $PR_NUMBER --body-file` で追記すること
+- **Test plan のチェックをPRに反映すること**: PR作成時点で完了済みの項目（`bun run test`・`bun run lint`・`bun run type-check` など、実施済みのもの）は `[ ]` を `[x]` に更新し、`gh pr edit $PR_NUMBER --body-file` でPR本文を更新する
 - PR URLを最後に表示する
