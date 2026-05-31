@@ -171,6 +171,9 @@ bun run type-check # TypeScript型チェック
 - [x] bun run type-check が通過することを確認
 - [ ] （機能ごとの確認項目）
 
+## Follow-up
+- （マージ後に確認・対応すべき申し送り事項があれば記載。なければセクションごと省略）
+
 Closes #NNN
 Closes #NNN
 
