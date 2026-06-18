@@ -166,10 +166,10 @@ bun run type-check # TypeScript型チェック
 - （変更点を箇条書き）
 
 ## Test plan
-- [x] bun run test が全てパスすることを確認
-- [x] bun run lint が 0 warnings で通過することを確認
-- [x] bun run type-check が通過することを確認
-- [ ] （機能ごとの確認項目）
+- [x] bun run test が全てパスすること
+- [x] bun run lint が 0 warnings で通過すること
+- [x] bun run type-check が通過すること
+- [ ] （機能ごとの確認項目 — 末尾は「〜すること」の体言止めで統一）
 
 ## Follow-up
 - （マージ後に確認・対応すべき申し送り事項があれば記載。なければセクションごと省略）
