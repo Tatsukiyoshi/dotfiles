@@ -169,7 +169,7 @@ bun run type-check # TypeScript型チェック
 - [x] bun run test が全てパスすること
 - [x] bun run lint が 0 warnings で通過すること
 - [x] bun run type-check が通過すること
-- [ ] （機能ごとの確認項目 — 末尾は「〜すること」の体言止めで統一）
+- [ ] （Previewや手動操作で確認できる動作確認項目 — 末尾は「〜すること」の体言止めで統一）
 
 ## Follow-up
 - （マージ後に確認・対応すべき申し送り事項があれば記載。なければセクションごと省略）
@@ -180,6 +180,7 @@ Closes #NNN
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
+- Test plan に追加する動作確認項目は **Preview や手動操作で再現できるものに限定すること**。特定の日付・データが必要な確認など再現が難しい項目は追加しない。そのような動作はユニットテストでカバーすること
 - ステップ7で実施済みの bun run test / lint / type-check は `[x]` でチェック済みにすること
 - `Closes` は Issue ごとに1行ずつ記載すること（複数Issueをまとめて1行に書かない）
 - PR作成後、`gh pr view $PR_NUMBER --json body --jq '.body'` で本文を取得し、各 `Closes #NNN` の記載があることを**必ず確認する**
