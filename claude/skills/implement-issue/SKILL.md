@@ -77,6 +77,16 @@ git checkout -b <branch-name>
 
 ## 6. テスト作成
 
+### 6-1. 既存テストへの影響確認（必須・テスト実行前に行うこと）
+
+変更したファイルに対応するテストファイル（`*.test.ts` / `*.test.tsx`）を読み、実装変更によって壊れるアサーションがないかを確認する。**このステップはテスト実行前に完了させること。実行してエラーを見てから初めて確認するのは誤り。**
+
+- 変更したファイルと同名・同ディレクトリのテストファイルを優先して確認する
+- 削除・変更した表示内容やロジックに依存するアサーションを特定する
+- 壊れるアサーションは実装変更の意図に沿って更新してからテストを実行する
+
+### 6-2. 新規テスト作成
+
 - 実装したコードに対する単体テストを作成する
 - `.claude/test_instructions.md` の厳守事項に従うこと
   - 意味のないアサーション禁止
@@ -85,12 +95,12 @@ git checkout -b <branch-name>
 
 ## 7. 品質チェック
 
-以下を全て通過させること:
+以下を全て通過させること。各コマンドは `tee` でファイルに保存し、出力を保持したまま分析すること（同じ目的で再実行しない）:
 
 ```bash
-bun run test       # テスト実行
-bun run lint       # ESLint（0 warnings）
-bun run type-check # TypeScript型チェック
+bun run test 2>&1 | tee /tmp/test-result.txt       # テスト実行
+bun run lint 2>&1 | tee /tmp/lint-result.txt        # ESLint（0 warnings）
+bun run type-check 2>&1 | tee /tmp/typecheck-result.txt  # TypeScript型チェック
 ```
 
 ## 8. 開発ノート振り返り（必須）
