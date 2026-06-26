@@ -142,7 +142,21 @@ Remove-Item ".claude\tmp\gh-body.md"
 
 ### 軽微な指摘を直接修正する場合
 
-該当ブランチをチェックアウトして修正・コミットし、`bun run test` / `bun run lint` / `bun run type-check` を実行して問題がないことを確認する。
+該当ブランチをチェックアウトして修正したあと、テストを実行する前に以下を必ず行う:
+
+- 変更したファイルに対応するテストファイル（`*.test.ts` / `*.test.tsx`）を読み、修正によって壊れるアサーションがないかを確認する
+- 壊れるアサーションは修正の意図に沿って更新してからテストを実行する
+- **実行してエラーを見てから確認するのは誤り。実行前に完了させること**
+
+その後、以下のコマンドで結果を記録しながらテストを実行する:
+
+```bash
+bun run lint 2>&1 | tee /tmp/lint-result.txt
+bun run type-check 2>&1 | tee /tmp/typecheck-result.txt
+bun run test 2>&1 | tee /tmp/test-result.txt
+```
+
+実行前に「何を確認するためにテストを実行するか」を明示してから実行すること。
 
 その後、以下を必ず実施する:
 
