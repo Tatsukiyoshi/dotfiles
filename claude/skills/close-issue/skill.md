@@ -66,16 +66,19 @@ gh api --method PATCH repos/:owner/:repo/milestones/<milestone_number> -f state=
 
 ## 5. 課題一覧の更新
 
-課題一覧（Issue #2）の該当行の状態を `OPEN` → `CLOSED` に更新する。
+課題一覧Issueの該当行の状態を `OPEN` → `CLOSED` に更新する。
+
+> **注意**: 課題一覧のIssue番号はフェーズが進むと変わる。以下の番号を固定値として使わないこと。まずメモリ（`reference_issue_list.md` 等）を確認し、なければ `gh issue list --search "課題一覧" --state open` で現在の番号を特定してから進める。
 
 推奨手順:
-1. `gh issue view 2 --json body --jq '.body'` で現在の本文を取得・確認する
-2. 対象行を特定し、Write ツールでプロジェクトの `.claude\tmp\gh-body.md` に更新後の本文を書き出す
-3. PowerShell ツールで反映・削除する:
+1. 現在の課題一覧Issue番号を特定する（メモリ確認 or `gh issue list --search "課題一覧" --state open`）
+2. `gh issue view <課題一覧Issue番号> --json body --jq '.body'` で現在の本文を取得・確認する
+3. 対象行を特定し、Write ツールでプロジェクトの `.claude\tmp\gh-body.md` に更新後の本文を書き出す
+4. PowerShell ツールで反映・削除する:
 
 ```powershell
 # Write ツールで .claude\tmp\gh-body.md に本文を書き出してから実行する
-gh issue edit 2 --body-file ".claude\tmp\gh-body.md"
+gh issue edit <課題一覧Issue番号> --body-file ".claude\tmp\gh-body.md"
 Remove-Item ".claude\tmp\gh-body.md"
 ```
 

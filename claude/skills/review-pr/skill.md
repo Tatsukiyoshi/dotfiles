@@ -276,11 +276,13 @@ Remove-Item ".claude\tmp\gh-body.md"
 
 4. **課題一覧の「現在の注力領域」セクションへの追加（必須）**
 
-   課題一覧（Issue #2）に「現在の注力領域」セクションが存在する場合、作成した Issue が注力領域の作業（例: Vercel Blob 移行）に関連するものであれば、必ずロードマップ表に行を追加すること。
+   > **注意**: 課題一覧のIssue番号はフェーズが進むと変わる。固定値を使わず、メモリ（`reference_issue_list.md` 等）または `gh issue list --search "課題一覧" --state open` で現在の番号を確認すること。
+
+   課題一覧に「現在の注力領域」セクションが存在する場合、作成した Issue が注力領域の作業（例: Vercel Blob 移行）に関連するものであれば、必ずロードマップ表に行を追加すること。
 
    - ステータスは依存 Issue の状態に応じて `🔄 着手可能` または `⏳ 待機中` を設定する
    - 依存関係が明確でない場合は `⏳ 待機中` とし、依存欄に暫定的な情報を記載する
-   - Write ツールで `/tmp/issue2-body.md` に本文を書き出し、`gh issue edit 2 --body-file /tmp/issue2-body.md && rm /tmp/issue2-body.md` で課題一覧を更新する
+   - Write ツールで `/tmp/issue-list-body.md` に本文を書き出し、`gh issue edit <課題一覧Issue番号> --body-file /tmp/issue-list-body.md && rm /tmp/issue-list-body.md` で課題一覧を更新する
 
    > **注意**: 注力領域に追加せず「信頼性・正確性にかかわる項目」のみへの追加はしないこと。注力領域の作業に関連する Issue は両方のセクションに登録する。
 
