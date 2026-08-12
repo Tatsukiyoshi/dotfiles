@@ -283,10 +283,11 @@ Closes #NNN
 PR番号は `gh pr create` 実行後に確定するため、スクリーンショットの格納・リンクはPR作成の**後**に行う。
 
 1. ステップ9で撮影したスクリーンショットを `screenshots/<PR番号>/` ディレクトリに、画面状態ごとに意味のわかるファイル名で配置する（例: `screenshots/1289/radar-ranking-mode-selected.png`）
-2. `git add screenshots/<PR番号>/` してコミットし、プッシュする（コミットメッセージ例: `docs: PR #<PR番号> の動作確認スクリーンショットを追加する`）
-3. PR本文の `## Screenshots` セクションに、各画像を以下の形式でリンクする（相対パスはPR上で正しく表示されないため、ブランチ名を含むGitHub raw blob URLを使うこと）:
+2. `git add screenshots/<PR番号>/` してコミットし、プッシュする（コミットメッセージ例: `docs: PR #<PR番号> の動作確認スクリーンショットを追加する`）。コミット直後に `git rev-parse HEAD` でこのコミットのSHAを控えておく
+3. PR本文の `## Screenshots` セクションに、各画像を以下の形式でリンクする（相対パスはPR上で正しく表示されないため、GitHub raw blob URLを使うこと）:
    ```
-   ![説明文](https://github.com/<owner>/<repo>/blob/<branch-name>/screenshots/<PR番号>/<ファイル名>.png?raw=true)
+   ![説明文](https://github.com/<owner>/<repo>/blob/<commit-sha>/screenshots/<PR番号>/<ファイル名>.png?raw=true)
    ```
+   - **`<branch-name>` ではなく手順2で控えた `<commit-sha>` を使うこと**。ブランチ名で参照すると、マージ後にブランチが削除された時点でリンクが404になる（ブランチ削除は本リポジトリのデフォルト運用）。コミットSHAはマージ後もそのコミットがmainの履歴に残る限り有効なままなので、恒久的なリンクになる
 4. `gh pr edit $PR_NUMBER --body-file` でPR本文を更新する
 - PR URLを最後に表示する
