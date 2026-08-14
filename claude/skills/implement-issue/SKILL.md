@@ -71,13 +71,15 @@ git checkout -b <branch-name>
 - **設計書が実装対象リポジトリとは別のリポジトリで管理されている場合**: 該当リポジトリ側で先に更新・コミットし、PRを作成する。設計書の所在リポジトリが実装対象と同じか別かは着手順序に影響しない——別リポジトリであっても実装より前に完了させる。リポジトリをまたいだ `Closes` によるIssue自動クローズは信頼できないため使わず、実装側PRの `Follow-up` セクションに設計書側のPRへの言及を残すにとどめる
   - 実装PR作成（ステップ14）の時点で設計書側PRがまだマージされていない場合は、実装PR本文に「## レビュー前提条件」チェックリストを追加し、設計書側PRのマージを実装PRレビューの前提条件として明示する
 
-### 5-a. 設計書サイト（Blume等・別リポジトリ管理）を編集した場合のビルド確認（必須・忘れやすいので毎回明示的にチェックすること）
+### 5-a. 設計書サイト（Blume等・別リポジトリ管理）を編集した場合のビルド・診断確認（必須・忘れやすいので毎回明示的にチェックすること）
 
-本ステップで設計書・開発ノートを別リポジトリ（例: `morning-status-blume`）側で更新した場合、そのリポジトリで **`bun run build`** を実行し、ビルドが通ることを確認する。
+本ステップで設計書・開発ノートを別リポジトリ（例: `morning-status-blume`）側で更新した場合、そのリポジトリで **`bun run build`** と **`bun run doctor`** の両方を実行し、両方が通ることを確認する。
 
-- 実装対象リポジトリの `bun run test` / `lint` / `type-check`（ステップ8）はこの別リポジトリの変更を検証しない。Markdown/MDXの構文エラー・壊れた内部リンク・frontmatter不備等はビルドでしか検出できないため、実装着手前に必ず実行する
-- 対象リポジトリの build コマンドは `package.json` の `scripts.build` を確認する（Blumeサイトの場合は `blume build` を実行する `bun run build`）
-- ビルド確認は該当リポジトリ側のPRの Test plan にも反映する（例: `` `bun run build` が通ること ``）
+- 実装対象リポジトリの `bun run test` / `lint` / `type-check`（ステップ8）はこの別リポジトリの変更を検証しない
+- `bun run build`（Blumeサイトの場合 `blume build`）はMarkdown/MDXの構文エラー・frontmatter不備等、ビルドを止めるレベルの問題を検出する
+- `bun run doctor`（Blumeサイトの場合 `blume doctor`。`package.json` の `scripts.doctor` で定義）は壊れた内部リンク等、ビルドは通っても見過ごされる設定・コンテンツ上の問題を診断する。**`build` が通ってもこの種の問題は検出されないため、`doctor` を省略しないこと**
+- 対象リポジトリのコマンドは `package.json` の `scripts.build` / `scripts.doctor` を確認する
+- ビルド・診断確認は該当リポジトリ側のPRの Test plan にも反映する（例: `` `bun run build` が通ること ``、`` `bun run doctor` で問題が検出されないこと ``）
 
 ## 6. 実装
 
