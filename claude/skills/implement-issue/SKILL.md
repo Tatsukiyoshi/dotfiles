@@ -81,6 +81,13 @@ git checkout -b <branch-name>
 - 対象リポジトリのコマンドは `package.json` の `scripts.build` / `scripts.doctor` を確認する
 - ビルド・診断確認は該当リポジトリ側のPRの Test plan にも反映する（例: `` `bun run build` が通ること ``、`` `bun run doctor` で問題が検出されないこと ``）
 
+**Blumeサイトで `blume build` が「dev serverが動作中」エラーを出す場合の運用（#1551）**:
+
+1. まず該当ポート（`.blume/dev.lock` に記録されたport、既定4321）が実際にリッスンされているか確認する
+2. **実際に動作している場合**: `--isolated`（`.blume-verify` への隔離ビルド）でビルド・doctorを実行する。動作中のdev serverの `.blume` ランタイムを壊さないため
+3. **動作していない場合（stale lock）**: `.blume/dev.lock` に記録された `pid` のプロセスが実在するか確認し、実在しなければロックファイルを削除してから、`--isolated` を付けない通常の `bun run build` / `bun run doctor` を実行する
+   - `--isolated` は常用するものではない。stale lockを解消せず毎回 `--isolated` に逃げると、本来の出力先（`.vercel/output`）でのビルド検証をスキップし続けることになる
+
 ## 6. 実装
 
 - Issueと、ステップ5で確定した設計書に沿って実装する
