@@ -157,7 +157,7 @@ async function checkViewport(browser, viewport, label) {
   await context.close();
 }
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ args: ['--lang=ja-JP'] });
 await checkViewport(browser, { width: 375, height: 812 }, 'mobile');
 await checkViewport(browser, { width: 1280, height: 900 }, 'desktop');
 await browser.close();
@@ -165,7 +165,7 @@ await browser.close();
 
 スクリプトはプロジェクトルート（`node_modules/playwright` を解決できる場所）から実行すること。`/tmp` に置いたスクリプトを実行すると `playwright` パッケージが解決できずエラーになるため、プロジェクト配下の一時ディレクトリ（`.claude/tmp/` 等）に置いて実行する。
 
-`browser.newContext()` には必ず `locale: 'ja-JP'` と `timezoneId: 'Asia/Tokyo'` を指定すること。指定しない場合、実行環境のOS/CIロケール設定に応じて `<input type="date">` や `<input type="time">` 等のネイティブUIが英語ロケール表記（月日年順・12時間制など）で描画されてしまい、PRに添付するスクリーンショットが実際のユーザー環境（日本語ロケール）と異なる見た目になる（値自体はロケールに依存しないISO正規形のため実装には影響しないが、動作確認の証跡として不正確になる）。
+`chromium.launch({ args: ['--lang=ja-JP'] })` と `browser.newContext({ locale: 'ja-JP', timezoneId: 'Asia/Tokyo' })` を**両方**指定すること。`<input type="date">` / `<input type="time">` 等のネイティブUIはOSが描画するウィジェットで、その表示ロケールはChromiumの起動時UI言語（`--lang`起動引数）に従う。`newContext` の `locale` だけでは`navigator.language`やJSの`Intl`は変わってもネイティブUIの表示（月日年順・12時間制になる等）までは変わらないため、`--lang=ja-JP`を併用しないと期待通りにならない（実機検証済み。値自体はロケールに依存しないISO正規形のため実装には影響しないが、動作確認の証跡として不正確になる）。
 
 ## 10. 開発ノート振り返り（必須）
 
