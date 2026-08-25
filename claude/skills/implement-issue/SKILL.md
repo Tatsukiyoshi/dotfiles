@@ -150,7 +150,7 @@ bun run type-check 2>&1 | tee /tmp/typecheck-result.txt  # TypeScript型チェ�
 import { chromium } from 'playwright';
 
 async function checkViewport(browser, viewport, label) {
-  const context = await browser.newContext({ viewport });
+  const context = await browser.newContext({ viewport, locale: 'ja-JP', timezoneId: 'Asia/Tokyo' });
   const page = await context.newPage();
   // ここで対象画面への遷移・操作を行う
   await page.screenshot({ path: `/tmp/xxx-${label}.png`, fullPage: true });
@@ -164,6 +164,8 @@ await browser.close();
 ```
 
 スクリプトはプロジェクトルート（`node_modules/playwright` を解決できる場所）から実行すること。`/tmp` に置いたスクリプトを実行すると `playwright` パッケージが解決できずエラーになるため、プロジェクト配下の一時ディレクトリ（`.claude/tmp/` 等）に置いて実行する。
+
+`browser.newContext()` には必ず `locale: 'ja-JP'` と `timezoneId: 'Asia/Tokyo'` を指定すること。指定しない場合、実行環境のOS/CIロケール設定に応じて `<input type="date">` や `<input type="time">` 等のネイティブUIが英語ロケール表記（月日年順・12時間制など）で描画されてしまい、PRに添付するスクリーンショットが実際のユーザー環境（日本語ロケール）と異なる見た目になる（値自体はロケールに依存しないISO正規形のため実装には影響しないが、動作確認の証跡として不正確になる）。
 
 ## 10. 開発ノート振り返り（必須）
 
