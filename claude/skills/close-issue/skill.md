@@ -1,6 +1,6 @@
 ---
 name: close-issue
-description: GitHub Issueを適切なコメント付きでクローズし、課題一覧の状態を更新する。Issue番号を引数に取る。
+description: GitHub Issueを適切なコメント付きでクローズする。Issue番号を引数に取る。
 user-invokable: true
 argument-hint: "[issue-number]"
 ---
@@ -64,26 +64,8 @@ gh api --method PATCH repos/:owner/:repo/milestones/<milestone_number> -f state=
 
 クローズした場合はユーザーに報告する（例: "マイルストーン『v3.6.0』をクローズしました"）。
 
-## 5. 課題一覧の更新
-
-課題一覧Issueの該当行の状態を `OPEN` → `CLOSED` に更新する。
-
-> **注意**: 課題一覧のIssue番号はフェーズが進むと変わる。以下の番号を固定値として使わないこと。まずメモリ（`reference_issue_list.md` 等）を確認し、なければ `gh issue list --search "課題一覧" --state open` で現在の番号を特定してから進める。
-
-推奨手順:
-1. 現在の課題一覧Issue番号を特定する（メモリ確認 or `gh issue list --search "課題一覧" --state open`）
-2. `gh issue view <課題一覧Issue番号> --json body --jq '.body'` で現在の本文を取得・確認する
-3. 対象行を特定し、Write ツールでプロジェクトの `.claude\tmp\gh-body.md` に更新後の本文を書き出す
-4. PowerShell ツールで反映・削除する:
-
-```powershell
-# Write ツールで .claude\tmp\gh-body.md に本文を書き出してから実行する
-gh issue edit <課題一覧Issue番号> --body-file ".claude\tmp\gh-body.md"
-Remove-Item ".claude\tmp\gh-body.md"
-```
-
-> **注意**: `gh issue edit` に `--body-file` を渡すファイルは必ず Write ツールでプロジェクト配下の `.claude\tmp\gh-body.md` に書き出してから PowerShell ツールで実行すること。bash の `/tmp/` は Write ツールのパスと異なるため読めない。
-
-## 6. 結果の表示
+## 5. 結果の表示
 
 クローズしたIssue番号・タイトル・理由を簡潔にユーザーに報告する。
+
+> **注意**: 課題一覧Issueの更新はこのスキルの範囲外。課題一覧への反映は`/next-issue`実行時に行われる。
