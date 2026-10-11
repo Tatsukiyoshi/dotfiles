@@ -1,0 +1,7 @@
+{
+  "name": "hold-permission-prompt",
+  "version": "0.1.0",
+  "description": "ツールの確認待ちをダイアログでなく入力欄の上の帯に保留し、確認中も会話できるようにする",
+  "author": { "name": "Shinya Watanabe" },
+  "types": "./types/index.d.ts"
+}
