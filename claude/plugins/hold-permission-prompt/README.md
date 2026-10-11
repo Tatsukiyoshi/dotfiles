@@ -91,7 +91,11 @@ dotfiles の `claude/plugins/hold-permission-prompt/` で管理し、`setup-clau
 
 1回だけ試す場合は `claude --plugin-dir ~/.claude/mods/hold-permission-prompt` で起動する。
 
-Mod API は `tool.check` イベントを使うため、Claude Code 2.1.293 以降が必要（2.1.247 では読み込めないことを確認済み）。
+Mod API は `tool.check` イベントを使うため、Claude Code 2.1.293 以降が必要。
+
+- 動作確認済み: 2.1.293（Zed に同梱の SDK 0.3.293）、2.1.296（CLI）
+- 動作しない: 2.1.247（`tool.check` イベントがなく読み込めない）
+- 2.1.248〜2.1.292 は未確認
 
 ## 確認
 
