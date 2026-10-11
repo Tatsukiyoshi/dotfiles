@@ -266,6 +266,45 @@ describe('合言葉（帯を描けない Zed 等での操作）', () => {
     expect(submitted).toHaveLength(1)
   })
 
+  test('「!ok all」は保留中の操作だけを承認し、質問は残す', async ($, on) => {
+    const submitted = setUp(on)
+
+    await checkBash($, 'call-1')
+    await checkWrite($, 'call-2')
+    await askQuestions($, 'q-3')
+    await type($, '!ok all')
+
+    expect(submitted).toHaveLength(1)
+    expect(submitted[0]).toContain('承認（#1）')
+    expect(submitted[0]).toContain('承認（#2）: Write: a.txt')
+    expect(submitted[0]).not.toContain('#3')
+    expect(await (await mountBand($)).find({ key: 'withdraw:3' })).toBeDefined()
+  })
+
+  test('「!ok 1 2」は列挙した番号の操作をまとめて承認する', async ($, on) => {
+    const submitted = setUp(on)
+
+    await checkBash($, 'call-1')
+    await checkWrite($, 'call-2')
+    await type($, '!ok 1 2')
+
+    expect(submitted).toHaveLength(1)
+    expect(submitted[0]).toContain('承認（#1）')
+    expect(submitted[0]).toContain('承認（#2）: Write: a.txt')
+    expect((await checkBash($, 'call-3')).decision).toBe('allow')
+    expect((await checkWrite($, 'call-4')).decision).toBe('allow')
+  })
+
+  test('「!ok N」で質問の番号を指すと落とす', async ($, on) => {
+    const submitted = setUp(on)
+
+    await askQuestions($, 'q-1')
+
+    expect(await type($, '!ok 1')).toEqual({ drop: expect.stringContaining('該当する保留中の操作がありません') })
+    expect(submitted).toHaveLength(0)
+    expect(await (await mountBand($)).find({ key: 'withdraw:1' })).toBeDefined()
+  })
+
   test('ユーザー以外が送ったプロンプトの合言葉は処理しない', async ($, on) => {
     const submitted = setUp(on)
 
@@ -314,6 +353,42 @@ describe('連絡の送信タイミング', () => {
 
     await $.turn.complete({ ...TURN_END, turnId: 'sub-turn', agentId: 'agent-1' })
     expect(submitted).toHaveLength(0)
+  })
+})
+
+describe('承認の有効期限', () => {
+  test('再実行を依頼したターンで使われなかった承認は、ターン終了時に捨てる', async ($, on) => {
+    setUp(on)
+
+    await checkBash($, 'call-1')
+    await type($, '!ok 1')
+    await $.turn.start({ text: '承認の連絡', turnId: 'turn-1' })
+    await $.turn.complete({ ...TURN_END, turnId: 'turn-1' })
+
+    expect(await checkBash($, 'call-2')).toEqual({ decision: 'deny', reason: holdReason(2) })
+  })
+
+  test('ターン中にボタンで押した承認は、そのターンの終了では捨てず、次のターンで使える', async ($, on) => {
+    setUp(on)
+
+    await checkBash($, 'call-1')
+    await $.turn.start({ text: '雑談', turnId: 'turn-1' })
+    await (await mountBand($)).press({ key: 'approve:1' })
+    await $.turn.complete({ ...TURN_END, turnId: 'turn-1' })
+
+    await $.turn.start({ text: '承認の連絡', turnId: 'turn-2' })
+    expect((await checkBash($, 'call-2')).decision).toBe('allow')
+  })
+
+  test('サブエージェントのターン終了では承認を捨てない', async ($, on) => {
+    setUp(on)
+
+    await checkBash($, 'call-1')
+    await type($, '!ok 1')
+    await $.turn.start({ text: '承認の連絡', turnId: 'turn-1' })
+    await $.turn.complete({ ...TURN_END, turnId: 'sub-turn', agentId: 'agent-1' })
+
+    expect((await checkBash($, 'call-2')).decision).toBe('allow')
   })
 })
 
@@ -420,7 +495,7 @@ describe('補助関数', () => {
     expect(inputKeyOf('Read', { file_path: 'a' })).not.toBe(inputKeyOf('Write', { file_path: 'a' }))
   })
 
-  test('toggleSelection と isAnswered', () => {
+  test('toggleSelection は単一選択なら置き換え、複数選択なら ON/OFF し、isAnswered は全問に選択があるときだけ true', () => {
     const single = QUESTIONS[0]!
     const multi = QUESTIONS[1]!
     expect(toggleSelection(single, ['A案'], 'B案')).toEqual(['B案'])

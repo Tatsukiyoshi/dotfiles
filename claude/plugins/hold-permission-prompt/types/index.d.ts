@@ -31,6 +31,8 @@ declare module 'claude-code' {
       questions: HeldQuestion[]
       /** 1回分だけ承認済みの操作（inputKey） */
       approvals: string[]
+      /** 実行中のターンで再実行を依頼した承認（inputKey）。ターン終了時に使われずに残っていれば捨てる */
+      deliveredApprovals: string[]
       /** ターン終了時にまとめてモデルへ送る連絡 */
       outbox: string[]
       isWorking: boolean

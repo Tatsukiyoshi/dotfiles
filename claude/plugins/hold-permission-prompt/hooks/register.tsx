@@ -9,6 +9,7 @@ const PLUGIN = 'hold-permission-prompt'
 const calls = atom({ plugin: 'hold-permission-prompt', key: 'calls' } as const, [] as HeldCall[])
 const questions = atom({ plugin: 'hold-permission-prompt', key: 'questions' } as const, [] as HeldQuestion[])
 const approvals = atom({ plugin: 'hold-permission-prompt', key: 'approvals' } as const, [] as string[])
+const deliveredApprovals = atom({ plugin: 'hold-permission-prompt', key: 'deliveredApprovals' } as const, [] as string[])
 const outbox = atom({ plugin: 'hold-permission-prompt', key: 'outbox' } as const, [] as string[])
 const isWorking = atom({ plugin: 'hold-permission-prompt', key: 'isWorking' } as const, false)
 const seq = atom({ plugin: 'hold-permission-prompt', key: 'seq' } as const, 0)
@@ -259,8 +260,12 @@ export const register: Register = on => {
     }
   })
 
+  // turn.start はメインのターンでしか発火しない（サブエージェントのターンでは発火しない）
   on('turn.start', async ($, e, next) => {
     await update($, isWorking, () => true)
+    // このターンで再実行を依頼する承認を控えておく。ターン中に押された承認は次のターンで依頼するため含めない
+    const delivered = await read($, approvals)
+    await update($, deliveredApprovals, () => delivered)
 
     return next(e)
   })
@@ -269,6 +274,10 @@ export const register: Register = on => {
     const result = await next(e)
 
     if (e.agentId === undefined) {
+      // 再実行を依頼したターンで使われなかった承認は捨てる（後で同じ入力の呼び出しが確認なしで通らないように）
+      const stale = await read($, deliveredApprovals)
+      await update($, approvals, list => list.filter(k => !stale.includes(k)))
+      await update($, deliveredApprovals, () => [])
       await update($, isWorking, () => false)
       await flush($)
     }

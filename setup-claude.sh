@@ -18,6 +18,10 @@ for plugin in "$SCRIPT_DIR/claude/plugins/"*/; do
   name="$(basename "$plugin")"
   rm -rf "${PLUGIN_TARGET_DIR:?}/$name"
   mkdir -p "$PLUGIN_TARGET_DIR/$name"
-  cp -r "${plugin}.claude-plugin" "${plugin}hooks" "${plugin}types" "${plugin}README.md" "$PLUGIN_TARGET_DIR/$name/"
+  # Mod ごとに構成が違っても止まらないよう、tests 以外をすべてコピーする（* はドットで始まる .claude-plugin を含まないため別に指定する）
+  for entry in "${plugin}.claude-plugin" "${plugin}"*; do
+    [ "$(basename "$entry")" = "tests" ] && continue
+    cp -r "$entry" "$PLUGIN_TARGET_DIR/$name/"
+  done
   echo "Claude plugin $name installed to $PLUGIN_TARGET_DIR/$name"
 done
