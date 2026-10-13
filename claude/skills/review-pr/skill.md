@@ -22,7 +22,10 @@ PR本文に「〇〇のレビューを踏まえたPR」「Closes #XXX」など�
 
 ```bash
 gh pr view <先行PR番号> --comments
+gh api repos/{owner}/{repo}/pulls/<先行PR番号>/comments --jq '.[] | "--- \(.user.login) \(.path):\(.line)\n\(.body)"'
 ```
+
+`--comments` では行コメント（コード行に付いたレビューコメント）が表示されないため、`gh api` で行コメントも取得する。申し送りや指摘はレビュー・行コメントとして投稿されることがあり、会話コメントだけで「申し送りなし」と判断しない。
 
 ## 2. Test Plan の確認
 
