@@ -146,6 +146,7 @@ bun run type-check 2>&1 | tee /tmp/typecheck-result.txt  # TypeScript型チェ�
 `app/` または `components/` 配下の画面・UIロジックを追加・変更した場合、実装完了後に実際にブラウザで動作を確認する（対象範囲の判断基準はステップ11-aのFigma JSON更新と同じ）。スクリプト・ロジックのみの変更はスキップしてよい。
 
 - dev server（`bun run dev`）を起動し、Playwright（`chromium-cli` があれば優先。なければ `node` から `playwright` パッケージを直接使うスクリプトで代用）で対象画面を操作する
+- スクリプトから dev server を起動する場合、`child_process.spawn` に、`shell: true` と引数の配列を一緒に渡さない。`spawn('bun', ['run', 'dev'], { shell: true })` は、Node.js の非推奨警告（DEP0190: シェル経由では引数がエスケープされず連結されるだけ）が出る形である。コマンドを 1 つの文字列で渡す（例: `spawn('bun run dev -- -p 3100', { shell: true })`）
 - 新機能だけでなく、**変更が影響しうる既存モード・既存フローも壊れていないか**を合わせて確認する
 - `page.on('console'/'pageerror')` 等でランタイムエラーが出ていないことを確認する
 - 確認した画面状態ごとにスクリーンショットを撮り、一時ディレクトリ（`/tmp` 等）に保存しておく。ファイル・コミットへの格納はステップ14（PR作成後）で行う
